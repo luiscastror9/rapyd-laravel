@@ -10,10 +10,10 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
-        "illuminate/support": "~5.6",
-        "laravelcollective/html": "~5.6",
-        "intervention/image": "2.4.2",
+        "php": ">=5.4.0",
+        "illuminate/support": "~5.0",
+        "laravelcollective/html": "~5.0",
+        "intervention/image": "2.*",
         "zofe/burp": "2.*"
     },
     "suggest": {
@@ -26,18 +26,5 @@
         "psr-4": {
             "Zofe\\Rapyd\\": "src/"
         }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Zofe\\Rapyd\\RapydServiceProvider"
-            ]
-        }
-    },
-    "require-dev": {
-        "laravel/framework": "5.6.*",
-        "orchestra/testbench": "3.6.*",
-        "phpunit/phpunit": "7.*",
-        "php-coveralls/php-coveralls": "^1.0"
     }
 }

@@ -7,7 +7,7 @@
     <meta name="description" content="@yield('description', 'crud widgets for laravel 4. datatable, grids, forms, in a simple package')" />
     @section('meta', '')
 
-    <link href="//fonts.googleapis.com/css?family=Bitter" rel="stylesheet" type="text/css" />
+    <link href="http://fonts.googleapis.com/css?family=Bitter" rel="stylesheet" type="text/css" />
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     
@@ -64,8 +64,7 @@
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/1.9.6/jquery.pjax.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/riot@3.11/riot+compiler.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/riot/2.2.4/riot+compiler.min.js"></script>
 {!! Rapyd::scripts() !!}
 <script>riot.mount('*')</script>
 

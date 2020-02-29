@@ -16,7 +16,7 @@ class Tags extends Field
     public $remote;
     public $separator = "&nbsp;";
     public $serialization_sep = ",";
-    public $local_options = [];
+    public $local_options;
 
     public $record_id;
     public $record_label;
@@ -55,7 +55,7 @@ class Tags extends Field
         }
         parent::getValue();
 
-        if (count($this->local_options)) {
+        if (!empty($this->local_options)) {
             $description_arr = array();
             $this->fill_tags = "";
             foreach ($this->options as $value => $description) {
@@ -160,6 +160,7 @@ class Tags extends Field
                 break;
 
             case "create":
+			
             case "modify":
 
                 $output  =  Form::text($this->name, '', array_merge($this->attributes, array('id'=>"".$this->name)))."\n";
@@ -195,7 +196,7 @@ acp;
 
                     Rapyd::script($script);
 
-                } elseif (count($this->options)) {
+                } elseif (!empty($this->options)) {
 
                     $options = json_encode($this->local_options);
 

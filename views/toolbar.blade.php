@@ -11,6 +11,7 @@
             <h2>{!! $label !!}</h2>
         </div>
         @endif
+
         @if (isset($buttons_left) && count($buttons_left))
         <div class="pull-left">
             @foreach ($buttons_left as $button) {!! $button !!}
@@ -20,9 +21,12 @@
 
         @if (isset($buttons_right) && count($buttons_right))
         <div class="pull-right">
-            @foreach ($buttons_right as $button) {!! $button !!}
+            @foreach ($buttons_right as $button) 
+			{!! $button  !!} 
             @endforeach
         </div>
+		@else
+		
         @endif
 
         @if (isset($buttons_center) && count($buttons_center))
@@ -34,4 +38,7 @@
     </div>
     <br />
 @else
+ <div class="btn-toolbar" role="toolbar">
+ <div class="pull-left">&nbsp</div>
+ <div class="pull-right">&nbsp</div></div>
 @endif

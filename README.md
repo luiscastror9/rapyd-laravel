@@ -1,6 +1,8 @@
 rapyd-laravel
 =============
 
+[![Join the chat at https://gitter.im/zofe/rapyd-laravel](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/zofe/rapyd-laravel?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 <a href="https://packagist.org/packages/zofe/rapyd">
     <img src="http://img.shields.io/packagist/v/zofe/rapyd.svg?style=flat" style="vertical-align: text-top">
 </a>
@@ -18,73 +20,37 @@ Nothing to "generate", just some classes to let you develop and maintain CRUD ba
 ![rapyd laravel](https://raw.github.com/zofe/rapyd-laravel/master/public/assets/rapyd-laravel.png)
  
 
+## Install in Laravel 5.2, 5.1, 5.0, 4.*
 
-## Install in Laravel 5.6, .. 5.2, 5.1, 5.0, 4.*
+dev-master should work laravel 5.2 but is tested on 5.1 (LTS)   
 
-
-require the package in your Laravel >= 5.6  
-`$ composer require zofe/rapyd`
-
-then publish assets:  
-`$ php artisan vendor:publish`  
-
-you can also require a specific version:
-
-`zofe/rapyd:"2.2.*"` for Laravel 5.2  
-`zofe/rapyd:"2.1.*"` for Laravel 5.1  
-`zofe/rapyd:"2.0.*"` for Laravel 5.0
+1. To `composer.json` add:  
+`"zofe/rapyd": "2.2.*"` for Laravel 5.2  
+`"zofe/rapyd": "2.1.*"` for Laravel 5.1  
+`"zofe/rapyd": "2.0.*"` for Laravel 5.0  
+`"zofe/rapyd": "1.3.*"` for Laravel 4.*  
 
 
-note: for Laravel <=5.4 you need to add the provider in your config/app.php:
-
-`Zofe\Rapyd\RapydServiceProvider::class` 
+2. run `$ composer update zofe/rapyd`
 
 
-## A couple of minutes of your time before you start
+3. add this in the "provider" array on your config/app.php:  
+ `Zofe\Rapyd\RapydServiceProvider::class,`  
+  or for < 5.1  
+ `'Zofe\Rapyd\RapydServiceProvider',`
 
-I came from an era where there was mutual appreciation among programmers, if you use this library and benefit from it join-me on Linkedin and write a short review.  
-Thanks to Mihai Berende for having done it already  
-[me@linkedin](https://www.linkedin.com/in/feliceostuni/)
 
-## DataSet
+4. then publish assets:  
+ `$ php artisan vendor:publish`  
+  or for < 5.0  
+ `$ php artisan asset:publish zofe/rapyd`  
+ `$ php artisan config:publish zofe/rapyd`
 
-DataSet is a simple presenter, it build a super-collection, a pagination and orderby links.
-You can start from tablename, a query, a model, o just an array.
 
- in a controller 
- 
+5. (optional) enable demo, uncomment the route:  
 ```php
-   $set = \DataSet::source("tablename")->paginate(10)->getSet();
-   
-   $set = \DataSet::source(DB::table('users')->select('name', 'email'))->paginate(10)->getSet();  
-                      
-   $set = \DataSet::source(new Article)->paginate(10)->getSet();
-   
-   $set = \DataSet::source(Article::with('author'))->paginate(10)->getSet();
-                       
-   $set = \DataSet::source($multidimensional_array)->paginate(10)->getSet();
-```
-
-in a view you can just write
-
-```php
-<p>
-    //cycle
-    @foreach ($set->data as $item)
-
-        {{ $item->title }}<br />
-        {{ $item->author->name }}<br />
-
-    @endforeach
-    
-
-    //pagination
-    {{ $set->links() }} <br />
-
-    
-    //sort link
-    {{ $set->orderbyLink('title', 'asc') }} <br />
-</p>
+#  /app/Http/rapyd.php
+// Route::controller('rapyd-demo','\Zofe\Rapyd\Demo\DemoController');
 ```
 
 ## DataGrid
@@ -463,14 +429,8 @@ so go to:
 
 
 
-## License & Contacts
+## License
 
 Rapyd is licensed under the [MIT license](http://opensource.org/licenses/MIT)
 
-Please join me and review my work on [Linkedin](https://www.linkedin.com/in/feliceostuni/)
-
-thanks
-
-<!---
- (https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=QJFERQGP4ZB6A)__
- -->
+If Rapyd saves you time, please __[support Rapyd](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=QJFERQGP4ZB6A)__

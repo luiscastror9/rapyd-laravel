@@ -54,6 +54,9 @@
                 {!! $dg->totalRows() !!}
             </div>
         @endif
+	
     </div>
+	@include('rapyd::toolbar', array('buttons_left'=>$buttons['BL'], 'buttons_right'=>$buttons['BR'], 'buttons_center'=>$buttons['BC'] ))
 </div>
+
 

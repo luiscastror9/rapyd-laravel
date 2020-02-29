@@ -37,7 +37,7 @@ var RTOOLBAR = {};
 		this.opts = $.extend({
 	
 			lang: 'en',
-			toolbar: 'default',
+			toolbar: 'mini',
 
 			load: true,
 		

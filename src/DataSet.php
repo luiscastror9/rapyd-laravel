@@ -99,7 +99,7 @@ class DataSet extends Widget
             }
 
         } else {
-            if (!empty($this->orderby) && ($this->orderby[0] == $field)) {
+            if (count($this->orderby) && ($this->orderby[0] == $field)) {
                 $dir = $this->orderby[1];
 
                 return ($direction == "" || $dir == $direction) ? true : false;
@@ -121,7 +121,7 @@ class DataSet extends Widget
         return $this;
     }
 
-    public function build($rowproc = null)
+    public function build()
     {
         if (is_string($this->source) && strpos(" ", $this->source) === false) {
             //tablename
@@ -151,9 +151,6 @@ class DataSet extends Widget
                 $this->key = $this->query->getModel()->getKeyName();
             }
 
-        } elseif ( is_a($this->source, "\PDOStatement")) {
-            $this->type = "PDOStatement";
-
         }
         //array
         elseif (is_array($this->source)) {
@@ -179,55 +176,6 @@ class DataSet extends Widget
 
         //build subset of data
         switch ($this->type) {
-            case "PDOStatement":
-                //orderby is handled by the code providing the PDOStatement
-
-                // Calculate page variable.
-                // $limit is set to only export a subset
-                if (isset($this->limit)) {
-                    $limit = $this->limit;
-                    $current_page = $this->url->value('page'.$this->cid, 0);
-                    $offset = (max($current_page-1,0)) * $limit;
-                }
-                // $limit is null to export every records.
-                else {
-                    $limit = null;
-                    $current_page = 0;
-                    $offset = 0;
-                }
-
-                $rows = array();
-                $skip = $cnt = 0;
-                foreach ($this->source as $row) {
-                    //skip ahead past the offset.
-                    if ($skip < $offset) {
-                        $skip++;
-                        continue;
-                    }
-                    //gather the rows to render
-                    else {
-                        if (is_callable($rowproc)) {
-                            $rowproc($row);
-                        } else {
-                            $rows[$cnt] = $row;
-                            $cnt++;
-                        }
-                    }
-                    // If limit is set and we are passed it, break out of loop.
-                    if (isset($limit) && ($cnt > $limit)) {
-                        break;
-                    }
-                }
-
-                $this->data = $rows;
-                // PDOStatement often do not know how many rows there are until all have been fetched.
-                $this->total_rows = null;
-                $this->paginator = new Paginator($this->data, $limit, $current_page,
-                    ['path' => Paginator::resolveCurrentPath(),
-                        'pageName' => "page".$this->cid,
-                    ]);
-                break;
-
             case "array":
                 //orderby
                 if (isset($this->orderby)) {
@@ -243,19 +191,9 @@ class DataSet extends Widget
                     }
                 }
 
-                // $limit is set to only export a subset
-                if (isset($this->limit)) {
-                    $limit = $this->limit;
-                    $current_page = $this->url->value('page'.$this->cid, 0);
-                    $offset = (max($current_page-1,0)) * $limit;
-                }
-                // $limit is null to export every records.
-                else {
-                    $limit = count($this->source);
-                    $current_page = 0;
-                    $offset = 0;
-                }
-
+                $limit = $this->limit ? $this->limit : 100000;
+                $current_page = $this->url->value('page'.$this->cid, 0);
+                $offset = (max($current_page-1,0)) * $limit;
                 $this->data = array_slice($this->source, $offset, $limit);
                 $this->total_rows = count($this->source);
                 $this->paginator = new LengthAwarePaginator($this->data, $this->total_rows, $limit, $current_page,

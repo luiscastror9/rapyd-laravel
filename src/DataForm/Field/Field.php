@@ -137,17 +137,18 @@ abstract class Field extends Widget
                 $this->db_name = $name;
             }
 
-            if (is_a(@$this->relation, 'Illuminate\Database\Eloquent\Relations\BelongsToMany')){
+            // if (is_a(@$this->relation, 'Illuminate\Database\Eloquent\Relations\BelongsToMany')){
 
-                if (method_exists($this->relation, 'getQualifiedRelatedPivotKeyName')) {
-                    $this->rel_other_key = $this->relation->getQualifiedRelatedPivotKeyName();
-                } elseif (method_exists($this->relation, 'getQualifiedRelatedKeyName')) {
-                    $this->rel_other_key = $this->relation->getQualifiedRelatedKeyName();
-                } else {
-                    $this->rel_other_key = $this->relation->getOtherKey();
-                }
+                // $this->rel_other_key = $this->relation->getQualifiedRelatedPivotKeyName();
 
-            }
+            // }
+			if (method_exists($this->relation, 'getQualifiedRelatedPivotKeyName'))
+				{ $this->rel_other_key = $this->relation->getQualifiedRelatedPivotKeyName(); } 
+			elseif (method_exists($this->relation, 'getQualifiedRelatedKeyName')) 
+			{ $this->rel_other_key = $this->relation->getQualifiedRelatedKeyName(); } 
+			else { $this->rel_other_key = $this->relation->getOtherKey(); }
+
+			
 
             return;
         }

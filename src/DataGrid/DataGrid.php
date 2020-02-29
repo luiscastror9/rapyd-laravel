@@ -72,20 +72,28 @@ class DataGrid extends DataSet
                 }
             }
             $this->rows[] = $row;
+			
+			// if(!isset($this->button_container))
+			// {
+			 //dd($this->button_container);//='';
+			// }
         }
         $this->output = \View::make($view, array('dg' => $this, 'buttons'=>$this->button_container, 'label'=>$this->label))->render();
         return $this->output;
     }
 
-    public function buildCSV($file = '', $timestamp = '', $sanitize = true, $del = array(), $directToFile = false)
+    public function buildCSV($file = '', $timestamp = '', $sanitize = true,$del = array())
     {
+        $this->limit = null;
+        parent::build();
+
         $segments = \Request::segments();
 
         $filename = ($file != '') ? basename($file, '.csv') : end($segments);
         $filename = preg_replace('/[^0-9a-z\._-]/i', '',$filename);
         $filename .= ($timestamp != "") ? date($timestamp).".csv" : ".csv";
 
-        $save = (strpos($file,"/")===false) ? false : true;
+        $save = (bool) strpos($file,"/");
 
         //Delimiter
         $delimiter = array();
@@ -110,17 +118,35 @@ class DataGrid extends DataSet
 
         fputs($handle, $delimiter['enclosure'].implode($delimiter['enclosure'].$delimiter['delimiter'].$delimiter['enclosure'], $this->headers) .$delimiter['enclosure'].$delimiter['line_ending']);
 
-        $this->limit = null;
-        if ($save && $directToFile) {
-            parent::build(function ($tablerow) use ($handle, $sanitize, $delimiter) {
-                $this->processTableRow($tablerow, $handle, $sanitize, $delimiter);
-            });
-        } else {
-            parent::build();
+        foreach ($this->data as $tablerow) {
+            $row = new Row($tablerow);
 
-            foreach ($this->data as $tablerow) {
-                $this->processTableRow($tablerow, $handle, $sanitize, $delimiter);
+            foreach ($this->columns as $column) {
+
+                if (in_array($column->name,array("_edit")))
+                    continue;
+
+                $cell = new Cell($column->name);
+                $value =  str_replace('"', '""',str_replace(PHP_EOL, '', strip_tags($this->getCellValue($column, $tablerow, $sanitize))));
+
+                // Excel for Mac is pretty stupid, and will break a cell containing \r, such as user input typed on a
+                // old Mac.
+                // On the other hand, PHP will not deal with the issue for use, see for instance:
+                // http://stackoverflow.com/questions/12498337/php-preg-replace-replacing-line-break
+                // We need to normalize \r and \r\n into \n, otherwise the CSV will break on Macs
+                $value = preg_replace('/\r\n|\n\r|\n|\r/', "\n", $value);
+
+                $cell->value($value);
+                $row->add($cell);
             }
+
+            if (count($this->row_callable)) {
+                foreach ($this->row_callable as $callable) {
+                    $callable($row);
+                }
+            }
+
+            fputs($handle, $delimiter['enclosure'] . implode($delimiter['enclosure'].$delimiter['delimiter'].$delimiter['enclosure'], $row->toArray()) . $delimiter['enclosure'].$delimiter['line_ending']);
         }
 
         fclose($handle);
@@ -131,44 +157,6 @@ class DataGrid extends DataSet
 
             return \Response::make(rtrim($output, "\n"), 200, $headers);
         }
-    }
-
-    /**
-     * @param $tablerow
-     * @param $handle
-     * @param $sanitize
-     * @param $delimiter
-     */
-    public function processTableRow($tablerow, $handle, $sanitize, $delimiter)
-    {
-        $row = new Row($tablerow);
-
-        foreach ($this->columns as $column) {
-
-            if (in_array($column->name, array("_edit")))
-                continue;
-
-            $cell = new Cell($column->name);
-            $value = str_replace('"', '""', str_replace(PHP_EOL, '', strip_tags($this->getCellValue($column, $tablerow, $sanitize))));
-
-            // Excel for Mac is pretty stupid, and will break a cell containing \r, such as user input typed on a
-            // old Mac.
-            // On the other hand, PHP will not deal with the issue for use, see for instance:
-            // http://stackoverflow.com/questions/12498337/php-preg-replace-replacing-line-break
-            // We need to normalize \r and \r\n into \n, otherwise the CSV will break on Macs
-            $value = preg_replace('/\r\n|\n\r|\n|\r/', "\n", $value);
-
-            $cell->value($value);
-            $row->add($cell);
-        }
-
-        if (count($this->row_callable)) {
-            foreach ($this->row_callable as $callable) {
-                $callable($row);
-            }
-        }
-
-        fputs($handle, $delimiter['enclosure'] . implode($delimiter['enclosure'] . $delimiter['delimiter'] . $delimiter['enclosure'], $row->toArray()) . $delimiter['enclosure'] . $delimiter['line_ending']);
     }
 
     protected function getCellValue($column, $tablerow, $sanitize = true)
